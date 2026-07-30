@@ -130,6 +130,8 @@ jobs:
           sed -i 's|0071FF|FF0000|g' flutter/lib/common.dart
           sed -i 's|2C8CFF|FF3333|g' flutter/lib/common.dart
           sed -i 's|0xFF2c8cff|0xFFFF0000|g' flutter/lib/desktop/pages/desktop_setting_page.dart
+          # ColorScheme primary (drives sliders, switches, etc.) is Colors.blue -> make it red
+          sed -i 's|primary: Colors.blue|primary: accent|g' flutter/lib/common.dart
           # Remove Account tab (self-hosted OSS has no account backend)
           sed -i 's|is_some_hard_opton("disable-account")|true|' libs/hbb_common/src/config.rs
           # Numeric one-time password (easier to read over the phone); approve-mode "Both" is already the default
