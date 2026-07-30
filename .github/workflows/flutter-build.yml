@@ -138,6 +138,8 @@ jobs:
           sed -i 's|const APP_PREFIX: &str = "rustdesk";|const APP_PREFIX: \&str = "VDesk";|' libs/portable/src/main.rs
           # Remove the Privacy Statement link from About (no page yet)
           perl -0777 -i -pe "s{\n\s*InkWell\(\s*onTap: \(\) \{\s*launchUrlString\('https://rustdesk\.com/privacy\.html'\);\s*\},\s*child: Text\(\s*translate\('Privacy Statement'\),\s*style: linkStyle,\s*\)\.marginSymmetric\(vertical: 4\.0\)\),}{}s" flutter/lib/desktop/pages/desktop_setting_page.dart
+          # Hide the "set up your own server" tip (we already default to our own server)
+          perl -0777 -i -pe "s/offstage: !\(!_svcStopped\.value &&\s*stateGlobal\.svcStatus\.value == SvcStatus\.ready &&\s*_svcIsUsingPublicServer\.value\),/offstage: true,/s" flutter/lib/desktop/pages/connection_page.dart
           echo "=== branding applied, verifying ==="
           grep -nE 'APP_NAME: RwLock|RENDEZVOUS_SERVERS: |RS_PUB_KEY: ' "$CFG"
 
