@@ -125,6 +125,19 @@ jobs:
           # Redirect links to our site
           sed -i "s|launchUrl(Uri.parse('https://rustdesk.com'))|launchUrl(Uri.parse('https://v-solutions.gr'))|" flutter/lib/common.dart
           sed -i "s|launchUrlString('https://rustdesk.com')|launchUrlString('https://v-solutions.gr')|" flutter/lib/desktop/pages/desktop_setting_page.dart
+          # --- Commit 4: red theme, remove Account tab, numeric password, portable folder, remove Privacy Statement ---
+          # Red accent (#FF0000) in the UI theme (accent + button + About banner)
+          sed -i 's|0071FF|FF0000|g' flutter/lib/common.dart
+          sed -i 's|2C8CFF|FF3333|g' flutter/lib/common.dart
+          sed -i 's|0xFF2c8cff|0xFFFF0000|g' flutter/lib/desktop/pages/desktop_setting_page.dart
+          # Remove Account tab (self-hosted OSS has no account backend)
+          sed -i 's|is_some_hard_opton("disable-account")|true|' libs/hbb_common/src/config.rs
+          # Numeric one-time password (easier to read over the phone); approve-mode "Both" is already the default
+          sed -i 's|Config::get_auto_password(len)|Config::get_auto_numeric_password(len)|' libs/hbb_common/src/password_security.rs
+          # Portable extraction folder -> VDesk (was hardcoded "rustdesk")
+          sed -i 's|const APP_PREFIX: &str = "rustdesk";|const APP_PREFIX: \&str = "VDesk";|' libs/portable/src/main.rs
+          # Remove the Privacy Statement link from About (no page yet)
+          perl -0777 -i -pe "s{\n\s*InkWell\(\s*onTap: \(\) \{\s*launchUrlString\('https://rustdesk\.com/privacy\.html'\);\s*\},\s*child: Text\(\s*translate\('Privacy Statement'\),\s*style: linkStyle,\s*\)\.marginSymmetric\(vertical: 4\.0\)\),}{}s" flutter/lib/desktop/pages/desktop_setting_page.dart
           echo "=== branding applied, verifying ==="
           grep -nE 'APP_NAME: RwLock|RENDEZVOUS_SERVERS: |RS_PUB_KEY: ' "$CFG"
 
