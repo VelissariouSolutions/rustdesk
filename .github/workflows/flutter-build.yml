@@ -140,10 +140,8 @@ jobs:
           perl -0777 -i -pe "s{\n\s*InkWell\(\s*onTap: \(\) \{\s*launchUrlString\('https://rustdesk\.com/privacy\.html'\);\s*\},\s*child: Text\(\s*translate\('Privacy Statement'\),\s*style: linkStyle,\s*\)\.marginSymmetric\(vertical: 4\.0\)\),}{}s" flutter/lib/desktop/pages/desktop_setting_page.dart
           # Hide the "set up your own server" tip (we already default to our own server)
           perl -0777 -i -pe "s/offstage: !\(!_svcStopped\.value &&\s*stateGlobal\.svcStatus\.value == SvcStatus\.ready &&\s*_svcIsUsingPublicServer\.value\),/offstage: true,/s" flutter/lib/desktop/pages/connection_page.dart
-          # --- QuickSupport variant: force incoming-only (ID + password only window) ---
+          # --- Incoming-only variant: only ID + password window (customer sees plain "VDesk") ---
           sed -i 's#.map_or(false, |x| x == ("incoming"))#.map_or(true, |x| x == ("incoming"))#' libs/hbb_common/src/config.rs
-          # Window title shows "VDesk Assist" for the incoming-only (Assist) build
-          sed -i 's|final name = bind.mainGetAppNameSync();|final name = bind.isIncomingOnly() ? "VDesk Assist" : bind.mainGetAppNameSync();|' flutter/lib/common.dart
           echo "=== branding applied, verifying ==="
           grep -nE 'APP_NAME: RwLock|RENDEZVOUS_SERVERS: |RS_PUB_KEY: ' "$CFG"
 
@@ -370,7 +368,7 @@ jobs:
           python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/VDesk.exe
           popd
           mkdir -p ./SignOutput
-          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/VDesk-Assist-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
+          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/VDesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2
@@ -387,8 +385,8 @@ jobs:
           $msiPlatform = if ('${{ matrix.job.arch }}' -eq 'aarch64') { 'ARM64' } else { 'x64' }
           msbuild msi.sln -p:Configuration=Release -p:Platform=$msiPlatform /p:TargetVersion=Windows10
           $msi = Get-ChildItem ./Package/bin/*/Release/en-us/Package.msi | Select-Object -First 1
-          mv $msi.FullName ../../SignOutput/VDesk-Assist-${{ env.VERSION }}-${{ matrix.job.arch }}.msi
-          sha256sum ../../SignOutput/VDesk-Assist-*.msi
+          mv $msi.FullName ../../SignOutput/VDesk-${{ env.VERSION }}-${{ matrix.job.arch }}.msi
+          sha256sum ../../SignOutput/VDesk-*.msi
 
       - name: Sign rustdesk self-extracted file
         if: env.UPLOAD_ARTIFACT == 'true' && env.SIGN_BASE_URL != '-2'
@@ -400,7 +398,7 @@ jobs:
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: vdesk-assist-packaged-windows-${{ matrix.job.arch }}
+          name: vdesk-incoming-packaged-windows-${{ matrix.job.arch }}
           path: ./SignOutput
 
   # The fallback for the flutter version, we use Sciter for 32bit Windows.
