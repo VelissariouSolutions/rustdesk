@@ -132,6 +132,9 @@ jobs:
           sed -i 's|0xFF2c8cff|0xFFFF0000|g' flutter/lib/desktop/pages/desktop_setting_page.dart
           # ColorScheme primary (drives sliders, switches, etc.) is Colors.blue -> make it red
           sed -i 's|primary: Colors.blue|primary: accent|g' flutter/lib/common.dart
+          # Unselected tab icon was blue -> neutral grey
+          sed -i 's|unSelectedTabIconColor: Color.fromARGB(255, 162, 203, 241)|unSelectedTabIconColor: Color.fromARGB(255, 150, 150, 150)|' flutter/lib/desktop/widgets/tabbar_widget.dart
+          sed -i 's|unSelectedTabIconColor: Color.fromARGB(255, 30, 65, 98)|unSelectedTabIconColor: Color.fromARGB(255, 140, 140, 140)|' flutter/lib/desktop/widgets/tabbar_widget.dart
           # Remove Account tab (self-hosted OSS has no account backend)
           sed -i 's|is_some_hard_opton("disable-account")|true|' libs/hbb_common/src/config.rs
           # Numeric one-time password (easier to read over the phone); approve-mode "Both" is already the default
