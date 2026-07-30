@@ -142,6 +142,8 @@ jobs:
           perl -0777 -i -pe "s{\n\s*InkWell\(\s*onTap: \(\) \{\s*launchUrlString\('https://rustdesk\.com/privacy\.html'\);\s*\},\s*child: Text\(\s*translate\('Privacy Statement'\),\s*style: linkStyle,\s*\)\.marginSymmetric\(vertical: 4\.0\)\),}{}s" flutter/lib/desktop/pages/desktop_setting_page.dart
           # Hide the "set up your own server" tip (we already default to our own server)
           perl -0777 -i -pe "s/offstage: !\(!_svcStopped\.value &&\s*stateGlobal\.svcStatus\.value == SvcStatus\.ready &&\s*_svcIsUsingPublicServer\.value\),/offstage: true,/s" flutter/lib/desktop/pages/connection_page.dart
+          # Remove the EULA/license-agreement card from the install screen
+          perl -0777 -i -pe "s{\n\s*Container\(\s*padding: EdgeInsets\.all\(12\),.*?End-user license agreement.*?\)\)\.marginSymmetric\(vertical: 2 \* em\),}{}s" flutter/lib/desktop/pages/install_page.dart
           # --- Incoming-only variant: only ID + password window (customer sees plain "VDesk") ---
           sed -i 's#.map_or(false, |x| x == ("incoming"))#.map_or(true, |x| x == ("incoming"))#' libs/hbb_common/src/config.rs
           echo "=== branding applied, verifying ==="
