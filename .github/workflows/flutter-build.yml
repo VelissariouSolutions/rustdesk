@@ -162,8 +162,10 @@ jobs:
           perl -0777 -i -pe "s/offstage: !\(!_svcStopped\.value &&\s*stateGlobal\.svcStatus\.value == SvcStatus\.ready &&\s*_svcIsUsingPublicServer\.value\),/offstage: true,/s" flutter/lib/desktop/pages/connection_page.dart
           # Remove the EULA/license-agreement card from the install screen
           perl -0777 -i -pe "s{\n\s*Container\(\s*padding: EdgeInsets\.all\(12\),.*?End-user license agreement.*?\)\)\.marginSymmetric\(vertical: 2 \* em\),}{}s" flutter/lib/desktop/pages/install_page.dart
-          # About: show the company V-Solutions logo below the copyright box (maker mark)
-          perl -0777 -i -pe 's/              \)\.marginSymmetric\(vertical: 4\.0\)\n            \],\n          \)\.marginOnly\(left: _kContentHMargin\)/              ).marginSymmetric(vertical: 4.0),\n              loadLogo(),\n            ],\n          ).marginOnly(left: _kContentHMargin)/s' flutter/lib/desktop/pages/desktop_setting_page.dart
+          # Home screen: remove the company logo under "Powered by" (keep just the text)
+          perl -0777 -i -pe 's/      Align\(\n        alignment: Alignment\.center,\n        child: loadLogo\(\),\n      \),\n//s' flutter/lib/desktop/pages/desktop_home_page.dart
+          # About: show the FULL company logo (theme-aware light/dark) below the copyright box
+          perl -0777 -i -pe 's/              \)\.marginSymmetric\(vertical: 4\.0\)\n            \],\n          \)\.marginOnly\(left: _kContentHMargin\)/              ).marginSymmetric(vertical: 4.0),\n              Builder(builder: (ctx) {\n                final dark = Theme.of(ctx).brightness == Brightness.dark;\n                return Image.asset(dark ? "assets\/about_logo_dark.png" : "assets\/about_logo_light.png", height: 56, fit: BoxFit.contain, errorBuilder: (c, e, s) => const SizedBox.shrink());\n              }).marginOnly(top: 16.0),\n            ],\n          ).marginOnly(left: _kContentHMargin)/s' flutter/lib/desktop/pages/desktop_setting_page.dart
           # --- Incoming-only variant: only ID + password window (customer sees plain "VDesk") ---
           sed -i 's#.map_or(false, |x| x == ("incoming"))#.map_or(true, |x| x == ("incoming"))#' libs/hbb_common/src/config.rs
           echo "=== branding applied, verifying ==="
